@@ -53,7 +53,7 @@ public class FileWorker {
         {
             Scanner s = new Scanner(sсanner.nextLine());
             List<Integer> row = new LinkedList<Integer>();
-            for (int col = 0; s.hasNextInt(); col++)
+            while (s.hasNextInt())
             {
                 row.add(s.nextInt());
             }

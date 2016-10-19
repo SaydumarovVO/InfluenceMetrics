@@ -1,11 +1,10 @@
 package ru.saydumarov;
 
 import org.apache.commons.math3.linear.MatrixUtils;
-import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.linear.RealMatrix;
+import org.apache.commons.math3.linear.RealVector;
 
 import java.io.FileNotFoundException;
-import java.lang.Object.*;
 
 public abstract class Normalization extends Object{
     public static double[][] rowNormalize (double[][] data){
@@ -27,16 +26,42 @@ public abstract class Normalization extends Object{
         return data;
     }
 
-    public static double [][] distance (double[][] data){
+    public static double[][] distance (double[][] data){
         int rows = data.length;
 
         RealMatrix matrixData = MatrixUtils.createRealMatrix(data);
-        double[][] a = new double[rows][rows];
+
+        double min = matrixData.getRowVector(0).getL1Distance(matrixData.getRowVector(1));
+        double max = matrixData.getRowVector(0).getL1Distance(matrixData.getRowVector(1));
+
         for (int i = 0; i < rows; i++){
-            for (int j = 0; j < rows; j++){
+            for (int j = rows - 1; j > i; j--){
                 RealVector vector1 = matrixData.getRowVector(i);
                 RealVector vector2 = matrixData.getRowVector(j);
-                a[i][j] = vector1.getL1Distance(vector2);
+                if (vector1.getL1Distance(vector2) >= max){
+                    max = vector1.getL1Distance(vector2);
+                }
+                if (vector1.getL1Distance(vector2) <= min){
+                    min = vector1.getL1Distance(vector2);
+                }
+            }
+        }
+        System.out.println("Максимум: " + max + "; Минимум: " + min);
+        double range = max - min;
+        double[][] a = new double[1000][2];
+
+        for (int i = 0; i < 1000; i++){
+            a[i][0] = i * (range/1000) + min;
+            a[i][1] = 0;
+        }
+
+        int iterator = 0;
+        for (int i = 0; i < rows; i++){
+            for (int j = rows - 1; j > i; j--){
+                RealVector vector1 = matrixData.getRowVector(i);
+                RealVector vector2 = matrixData.getRowVector(j);
+                iterator = (int)Math.floor((vector1.getL1Distance(vector2) - min)/(range/1000));
+                a[iterator][1]++;
             }
         }
         return a;
@@ -53,22 +78,8 @@ public abstract class Normalization extends Object{
         }
 
         array = rowNormalize(array);
-        double[][] metrics = distance(array);
+        double[][] distanceRange = distance(array);
 
-//        for (int i = 0; i < array.length; i++){
-//            for (int j = 0; j < array[0].length; j++){
-//                System.out.print(array[i][j] + " ");
-//            }
-//            System.out.println();
-//        }
-
-        for (int i = 0; i < metrics.length; i++){
-            for (int j = 0; j <= metrics[0].length; j++){
-                System.out.print(metrics[i][j] + " ");
-            }
-            System.out.println();
-        }
-
-        FileWorker.write(fileNameOut, metrics);
+        FileWorker.write(fileNameOut, distanceRange);
     }
 }

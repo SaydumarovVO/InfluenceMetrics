@@ -84,7 +84,7 @@ public class Normalization{
 
     public static void main(String[] args){
         String fileNameOut = "D:\\Progay\\IDEA Workspace\\Influence Metrics\\output.txt";
-        String fileNameIn = "D:\\Progay\\IDEA Workspace\\Influence Metrics\\input.txt";
+        String fileNameIn = "D:\\Progay\\IDEA Workspace\\Influence Metrics\\actions_influence.txt";
         double[][] array = new double[0][];
         try {
             array = FileWorker.read(fileNameIn);

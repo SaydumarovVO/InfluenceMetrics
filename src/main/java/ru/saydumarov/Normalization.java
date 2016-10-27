@@ -19,27 +19,26 @@ public class Normalization{
              subsidiaryArray[(int) data[i][0]] += data[i][2];
         }
 
-//        int subsidiaryMax = 0;
-//        int k = 0;
-//        for (int i = 0; i < subsidiaryArray.length; i++){
-//            if (subsidiaryArray[i] > subsidiaryMax){
-//                subsidiaryMax = subsidiaryArray[i];
-//                k = i;
-//            }
-//        }
-//        System.out.println(subsidiaryMax + " " + k);
-
         for (int i = 0; i < data.length; i++){
             data[i][2] = data[i][2]/subsidiaryArray[(int) data[i][0]];
         }
         return data;
     }
 
+    public static int getAmountOfUsers(double[][] data){
+        int max = 0;
+        for (int i = 0; i < data.length; i++){
+            if (data[i][0] > max){
+                max = (int) data[i][0];
+            }
+        }
+        return max;
+    }
+
 
     public static double[][] distance(double[][] data){
-        SparseRealMatrix matrixData = null;
-        int rows = data.length;
-        matrixData.createMatrix(rows, rows);
+        int rows = getAmountOfUsers(data);
+        SparseRealMatrix matrixData = new OpenMapRealMatrix(rows, rows);
 
         for (int i = 0; i < rows; i++){
             matrixData.setEntry((int)data[i][0], (int)data[i][1], data[i][2]);

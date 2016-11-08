@@ -1,11 +1,10 @@
 package ru.saydumarov;
 
-import org.apache.commons.math3.linear.*;
-
 import java.io.FileNotFoundException;
 import java.util.*;
 
 public class Normalization{
+
     public static double[][] normalize (double[][] data){
         double max = 0;
 
@@ -33,69 +32,81 @@ public class Normalization{
                 max = (int) data[i][0];
             }
         }
+        System.out.println("Количество агентов в сети " + max);
         return max;
     }
 
-    public static boolean checkOrder(double[][] data){
-        double[] a = new double[data.length];
-        for (int i = 0; i < data.length; i++){
-            a[i] = data[i][0];
-        }
-        Arrays.sort(a);
-        boolean k = true;
-        for (int i = 1; i < a.length; i++){
-            if ((a[i] != a[i-1]) & (a[i] != a[i-1] + 1)){
-                k = false;
-            }
-        }
-        return k;
-    }
-
     public static double[][] distance(double[][] data){
-        TreeMap<Double, SparseRealVector> mapData = new TreeMap<Double, SparseRealVector>();
+//        TreeMap<Double, SparseRealVector> mapData = new TreeMap<Double, SparseRealVector>();
+        TreeMap<Double, MapVector> mapData = new TreeMap<Double, MapVector>();
         int rows = getAmountOfUsers(data);
-        SparseRealVector v = new OpenMapRealVector(rows);
+//        SparseRealVector v = new OpenMapRealVector(rows);
+        MapVector mapVector = new MapVector();
+//        for (int i = 0; i < data.length; i++){
+//            if (mapData.get(new Double(data[i][0])) != null){
+//                v = mapData.get(new Double(data[i][0]));
+//                v.setEntry((int)data[i][1], data[i][2]);
+//                mapData.put(new Double(data[i][0]), v);
+//            }
+//            else {
+//                v.setEntry((int)data[i][1], data[i][2]);
+//                mapData.put(new Double(data[i][0]), v);
+//            }
+////            if ((i % (Math.floor(data.length/100)) == 0) || (i == data.length - 1)){
+////                System.out.println("Выполнена " + i + "ая итерация");
+////            }
+//        }
+
         for (int i = 0; i < data.length; i++){
             if (mapData.get(new Double(data[i][0])) != null){
-                v = mapData.get(new Double(data[i][0]));
-                v.setEntry((int)data[i][1], data[i][2]);
-                mapData.put(new Double(data[i][0]), v);
+                mapVector = mapData.get(new Double(data[i][0]));
+                mapVector.put(new Double(data[i][1]), new Double(data[i][2]));
+                mapData.put(new Double(data[i][0]), mapVector);
             }
             else {
-                v.setEntry((int)data[i][1], data[i][2]);
-                mapData.put(new Double(data[i][0]), v);
+                mapVector.put(new Double(data[i][1]), new Double(data[i][2]));
+                mapData.put(new Double(data[i][0]), mapVector);
             }
         }
 
         double min = mapData.get(new Double(1)).getL1Distance(mapData.get(new Double(2)));
         double max = mapData.get(new Double(1)).getL1Distance(mapData.get(new Double(2)));
 
-        for (Double i = mapData.firstKey(); i < mapData.lowerKey(mapData.lastKey()); i = mapData.ceilingKey(i)){
-            for (Double j = mapData.lastKey(); j > i; j = mapData.lowerKey(j)){
-                SparseRealVector vector1 = mapData.get(i);
-                SparseRealVector vector2 = mapData.get(j);
-                if (vector1.getL1Distance(vector2) >= max) {
-                    max = vector1.getL1Distance(vector2);
-                }
-                if (vector1.getL1Distance(vector2) <= min) {
-                    min = vector1.getL1Distance(vector2);
-                }
-            }
-        }
 
 
-//        for (int i = 1; i < rows - 1; i++) {
-//            for (int j = rows - 1; j > i; j--) {
-//                SparseRealVector vector1 = mapData.get(new Double(i));
-//                SparseRealVector vector2 = mapData.get(new Double(j));
+//        for (Double i = mapData.firstKey(); i < mapData.lowerKey(mapData.lastKey()); i = mapData.ceilingKey(i)){
+//            long startI = System.currentTimeMillis();
+//            for (Double j = mapData.lastKey(); j > i; j = mapData.lowerKey(j)){
+//                long startJ = System.currentTimeMillis();
+//                SparseRealVector vector1 = mapData.get(i);
+//                SparseRealVector vector2 = mapData.get(j);
 //                if (vector1.getL1Distance(vector2) >= max) {
 //                    max = vector1.getL1Distance(vector2);
 //                }
 //                if (vector1.getL1Distance(vector2) <= min) {
 //                    min = vector1.getL1Distance(vector2);
 //                }
+//                long endJ = System.currentTimeMillis();
+//                System.out.println("Время на " + j + "ую итерацию по j: " + (endJ-startJ));
 //            }
+//            long endI = System.currentTimeMillis();
+//            System.out.println("Время на " + i + "ую итерацию по i: " + (endI-startI));
 //        }
+
+        for (Double i = mapData.firstKey(); i < mapData.lowerKey(mapData.lastKey()); i = mapData.ceilingKey(i)){
+            long startI = System.currentTimeMillis();
+            for (Double j = mapData.lastKey(); j > i; j = mapData.lowerKey(j)){
+                long startJ = System.currentTimeMillis();
+                MapVector vector1 = mapData.get(i);
+                MapVector vector2 = mapData.get(j);
+                max = Math.max(vector1.getL1Distance(vector2), max);
+                min = Math.min(vector1.getL1Distance(vector2), min);
+                long endJ = System.currentTimeMillis();
+                System.out.println("Время на " + j + "ую итерацию по j: " + (endJ - startJ));
+            }
+            long endI = System.currentTimeMillis();
+            System.out.println("Время на " + i + "ую итерацию по i: " + (endI - startI));
+        }
 
         System.out.println("Максимум: " + max + "; Минимум: " + min);
         double range = max - min;
@@ -106,23 +117,17 @@ public class Normalization{
             a[i][1] = 0;
         }
 
-        int iterator = 0;
         for (Double i = mapData.firstKey(); i < mapData.lowerKey(mapData.lastKey()); i = mapData.ceilingKey(i)){
+            long start = System.currentTimeMillis();
             for (Double j = mapData.lastKey(); j > i; j = mapData.lowerKey(j)){
-                SparseRealVector vector1 = mapData.get(i);
-                SparseRealVector vector2 = mapData.get(j);
-                iterator = (int)Math.floor((vector1.getL1Distance(vector2) - min)/(range/1000));
+                MapVector vector1 = mapData.get(i);
+                MapVector vector2 = mapData.get(j);
+                int iterator = (int)Math.floor((vector1.getL1Distance(vector2) - min)/(range/1000));
                 a[iterator][1]++;
             }
+            long end = System.currentTimeMillis();
+            System.out.println(end - start);
         }
-//        for (int i = 1; i < rows; i++){
-//            for (int j = rows - 1; j > i; j--){
-//                SparseRealVector vector1 = mapData.get(new Double(i));
-//                SparseRealVector vector2 = mapData.get(new Double(j));
-//                iter = (int)Math.floor((vector1.getL1Distance(vector2) - min)/(range/1000));
-//                a[iter][1]++;
-//            }
-//        }
 
         return a;
     }
@@ -136,9 +141,6 @@ public class Normalization{
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
-//        boolean k = checkOrder(array);
-//        System.out.print(k);
 
         array = normalize(array);
         double[][] distanceRange = distance(array);

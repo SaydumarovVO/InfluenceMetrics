@@ -67,10 +67,15 @@ public class Normalization{
                 mapVector.put(new Double(data[i][1]), new Double(data[i][2]));
                 mapData.put(new Double(data[i][0]), mapVector);
             }
+            if ((i % (Math.floor(data.length/100)) == 0) || (i == data.length - 1)){
+                System.out.println("Выполнена " + i + "ая итерация");
+            }
         }
 
-        double min = mapData.get(new Double(1)).getL1Distance(mapData.get(new Double(2)));
-        double max = mapData.get(new Double(1)).getL1Distance(mapData.get(new Double(2)));
+        double min = MapVector.getL1Distance(mapData.get(new Double(2)), mapData.get(new Double(1)));
+        double max = MapVector.getL1Distance(mapData.get(new Double(2)), mapData.get(new Double(1)));
+
+//        double max = mapData.get(new Double(1)).getL1Distance(mapData.get(new Double(2)));
 
 
 
@@ -93,14 +98,15 @@ public class Normalization{
 //            System.out.println("Время на " + i + "ую итерацию по i: " + (endI-startI));
 //        }
 
-        for (Double i = mapData.firstKey(); i < mapData.lowerKey(mapData.lastKey()); i = mapData.ceilingKey(i)){
+        for (Double i = mapData.firstKey(); i < mapData.lowerKey(mapData.lastKey()); i = mapData.higherKey(i)){
             long startI = System.currentTimeMillis();
             for (Double j = mapData.lastKey(); j > i; j = mapData.lowerKey(j)){
                 long startJ = System.currentTimeMillis();
                 MapVector vector1 = mapData.get(i);
                 MapVector vector2 = mapData.get(j);
-                max = Math.max(vector1.getL1Distance(vector2), max);
-                min = Math.min(vector1.getL1Distance(vector2), min);
+                max = Math.max(MapVector.getL1Distance(vector2, vector2), max);
+                min = Math.min(MapVector.getL1Distance(vector1, vector2), min);
+//                min = Math.min(vector1.getL1Distance(vector2), min);
                 long endJ = System.currentTimeMillis();
                 System.out.println("Время на " + j + "ую итерацию по j: " + (endJ - startJ));
             }
@@ -122,7 +128,7 @@ public class Normalization{
             for (Double j = mapData.lastKey(); j > i; j = mapData.lowerKey(j)){
                 MapVector vector1 = mapData.get(i);
                 MapVector vector2 = mapData.get(j);
-                int iterator = (int)Math.floor((vector1.getL1Distance(vector2) - min)/(range/1000));
+                int iterator = (int)Math.floor((MapVector.getL1Distance(vector1, vector2) - min)/(range/1000));
                 a[iterator][1]++;
             }
             long end = System.currentTimeMillis();

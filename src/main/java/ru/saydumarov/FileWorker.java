@@ -1,11 +1,14 @@
 package ru.saydumarov;
 
 
+import org.apache.commons.math3.linear.SparseRealVector;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 public class FileWorker {
     public static void write(String fileName, double[][] data) {
@@ -28,10 +31,39 @@ public class FileWorker {
                     }
                     out.println();
                 }
-            } finally {
+            }
+            finally {
                 out.close();
             }
-        } catch(IOException e) {
+        }
+        catch(IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void write(String fileName, ConcurrentSkipListMap<Double, SparseRealVector> data){
+        File file = new File(fileName);
+
+        try{
+            if(!file.exists()){
+                file.createNewFile();
+            }
+
+            PrintWriter out = new PrintWriter(file.getAbsoluteFile());
+
+            try {
+                for(SparseRealVector v : data.values()){
+                    for (int i = 0; i < v.getDimension(); i++){
+                        out.print(v.getEntry(i) + " ");
+                    }
+                    out.println();
+                }
+            }
+            finally {
+                out.close();
+            }
+        }
+        catch(IOException e) {
             throw new RuntimeException(e);
         }
     }

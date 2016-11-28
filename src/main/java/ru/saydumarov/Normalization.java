@@ -45,7 +45,7 @@ public class Normalization{
     }
 
 
-    public static int getMaxValue(HashMap<Double, Integer> map){
+    public static int getMaxValue(ConcurrentSkipListMap<Double, Integer> map){
         Integer max = 0;
         for (Map.Entry<Double, Integer> entry: map.entrySet()){
             if(entry.getValue() >= max){
@@ -75,9 +75,9 @@ public class Normalization{
     public static ConcurrentSkipListMap<Double, SparseRealVector> toMapTransform(double[][] data){
         ConcurrentSkipListMap<Double, SparseRealVector> mapData = new ConcurrentSkipListMap<Double, SparseRealVector>();
         HashMap<Double, Integer> mapping = Normalization.getInfluentialUsers(data);
-        int colomns = mapping.keySet().size();
-        System.out.println("Число влиятельных пользователей: " + colomns);
-        SparseRealVector v = new OpenMapRealVector(colomns);
+        int columns = mapping.keySet().size();
+        System.out.println("Число влиятельных пользователей: " + columns);
+        SparseRealVector v = new OpenMapRealVector(columns);
         for (int i = 0; i < data.length; i++){
             if (mapData.get(new Double(data[i][0])) != null){
                 v = mapData.get(new Double(data[i][0]));
@@ -116,6 +116,7 @@ public class Normalization{
         }
 
         array = normalize(array);
+
         ConcurrentSkipListMap<Double, SparseRealVector> list = toMapTransform(array);
 
         ArrayList<double[][]> results = new ArrayList<>();
@@ -139,5 +140,6 @@ public class Normalization{
         double[][] distanceRange = aggregate(results);
 
         FileWorker.write(fileNameOut, distanceRange);
+//        FileWorker.write(fileNameOut, list);
     }
 }

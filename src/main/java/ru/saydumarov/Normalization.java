@@ -4,13 +4,12 @@ import org.apache.commons.math3.linear.OpenMapRealVector;
 import org.apache.commons.math3.linear.SparseRealVector;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 
 public class Normalization{
+
 
     public static double[][] normalize (double[][] data){
         double max = 0;
@@ -108,6 +107,8 @@ public class Normalization{
         String fileNameOut = "D:\\Progay\\IDEA Workspace\\Influence Metrics\\output.txt";
         String fileNameIn = "D:\\Progay\\IDEA Workspace\\Influence Metrics\\actions_influence.txt";
 
+        Set<Double> aggregator = new HashSet<Double>();
+
         double[][] array = new double[0][];
         try {
             array = FileWorker.read(fileNameIn);
@@ -117,12 +118,16 @@ public class Normalization{
 
         array = normalize(array);
 
+//        int test = getAmountOfUsers(array);
+
         ConcurrentSkipListMap<Double, SparseRealVector> list = toMapTransform(array);
+
+        HashSet<Double> keySet = (HashSet<Double>) list.keySet();
 
         ArrayList<double[][]> results = new ArrayList<>();
         ArrayList<Parallel> concurrencyList = new ArrayList<>();
         for (int i = 0; i < 4; i++){
-            concurrencyList.add(new Parallel(i, list, results));
+            concurrencyList.add(new Parallel(i, list, results, keySet));
         }
 
         for(Parallel temp : concurrencyList){
@@ -140,6 +145,5 @@ public class Normalization{
         double[][] distanceRange = aggregate(results);
 
         FileWorker.write(fileNameOut, distanceRange);
-//        FileWorker.write(fileNameOut, list);
     }
 }

@@ -6,6 +6,7 @@ import org.apache.commons.math3.util.FastMath;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 public class Parallel extends Thread {
@@ -13,15 +14,16 @@ public class Parallel extends Thread {
     private int setId;
     private ConcurrentSkipListMap<Double, SparseRealVector> outsideData;
     private ArrayList<double[][]> results = new ArrayList<>();
+    public HashSet<Double> setOfKeys = new HashSet<>();
 
-
-    public Parallel(int setId, ConcurrentSkipListMap<Double, SparseRealVector> outsideData, ArrayList<double[][]> results){
+    public Parallel(int setId, ConcurrentSkipListMap<Double, SparseRealVector> outsideData, ArrayList<double[][]> results, HashSet<Double> setOfKeys){
         this.setId = setId;
         this.outsideData = outsideData;
         this.results = results;
+        this.setOfKeys = setOfKeys;
     }
 
-    public double[][] distanceL1(ConcurrentSkipListMap<Double, SparseRealVector> mapData, int l){
+    public double[][] distanceL1(ConcurrentSkipListMap<Double, SparseRealVector> mapData, int l, HashSet<Double> keySet){
 
         double min = 0;
         double max = 2;
@@ -57,6 +59,6 @@ public class Parallel extends Thread {
     }
 
     public void run(){
-        results.set(setId, distanceL1(outsideData, setId));
+        results.set(setId, distanceL1(outsideData, setId, setOfKeys));
     }
 }

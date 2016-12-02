@@ -11,8 +11,8 @@ import java.util.Scanner;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 public class FileWorker {
-    public static void write(String fileName, double[][] data) {
-        File file = new File(fileName);
+    public static void write(String fileName, int numberOfFile, double[][] data) {
+        File file = new File(fileName + numberOfFile + ".txt");
         int rows = data.length;
         int columns = data[0].length;
 

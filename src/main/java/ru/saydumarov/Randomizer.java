@@ -1,20 +1,26 @@
 package ru.saydumarov;
 
 import java.util.HashSet;
+import java.util.NavigableSet;
 import java.util.Random;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 public class Randomizer {
 
-    public static HashSet<Double> random(HashSet<Double> hashSet, int numberOfValues, int maxValue){
+    public static ConcurrentSkipListSet<Double> random(NavigableSet<Double> set, int numberOfValues, int maxValue, int seed){
 
-        HashSet<Double> generated = new HashSet<Double>();
-        Random r = new Random();
+        ConcurrentSkipListSet<Double> generated = new ConcurrentSkipListSet<>();
+        Random r = new Random(System.currentTimeMillis() + seed);
         while (generated.size() < numberOfValues) {
             Double a = Double.valueOf(r.nextInt(maxValue));
-            if (hashSet.contains(a)){
+            if (set.contains(a)){
                 generated.add(a);
-                hashSet.remove(a);
+                set.remove(a);
+//                System.out.println("Я нашёл подходящее случайное число " + a);
             }
+//            else{
+//                System.out.println("Я проверил " + a + ", но оно не подошло:(");
+//            }
         }
         return generated;
     }

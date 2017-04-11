@@ -4,10 +4,7 @@ package ru.saydumarov;
 import org.apache.commons.math3.linear.SparseRealVector;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 public class FileWorker {
@@ -67,6 +64,58 @@ public class FileWorker {
             throw new RuntimeException(e);
         }
     }
+
+    public static void writeInfluence(String fileName, List<List<Double>> data){
+        File file = new File(fileName);
+
+        try{
+            if(!file.exists()){
+                file.createNewFile();
+            }
+
+            PrintWriter out = new PrintWriter(file.getAbsoluteFile());
+
+            try {
+                for(List<Double> k : data){
+                    for (Double m : k){
+                        out.print(m + " ");
+                    }
+                    out.println();
+                }
+            }
+            finally {
+                out.close();
+            }
+        }
+        catch(IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void writeInfluence(String fileName, ConcurrentSkipListMap<Double, Double> data){
+        File file = new File(fileName);
+
+        try{
+            if(!file.exists()){
+                file.createNewFile();
+            }
+
+            PrintWriter out = new PrintWriter(file.getAbsoluteFile());
+
+            try {
+                for(Double k : data.keySet()){
+                    out.println(k + " " + data.get(k));
+                }
+            }
+            finally {
+                out.close();
+            }
+        }
+        catch(IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     public static int[] toIntArray(List<Integer> list){
         int[] ret = new int[list.size()];

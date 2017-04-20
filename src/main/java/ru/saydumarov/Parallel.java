@@ -42,14 +42,14 @@ public class Parallel extends Thread {
             a[i][1] = 0;
         }
 
-        ConcurrentSkipListSet<Double> iSequence = Randomizer.random(keySet, 10000, 977827, l);
+        ConcurrentSkipListSet<Double> iSequence = Randomizer.random(keySet, 1000, 977827, l);
         Iterator iIterator = iSequence.iterator();
         accum.addAll(iSequence);
         long start = System.currentTimeMillis();
         while (iIterator.hasNext()){
             Object i = iIterator.next();
 
-            ConcurrentSkipListSet<Double> jSequence = Randomizer.random(keySet, 10000, 977827, l);
+            ConcurrentSkipListSet<Double> jSequence = Randomizer.random(keySet, 1000, 977827, l);
             accum.addAll(jSequence);
             Iterator<Double> jIterator = jSequence.iterator();
             long startI = System.currentTimeMillis();
@@ -66,10 +66,10 @@ public class Parallel extends Thread {
 //                System.out.println("Время на " + j + " итерацию по j: " + " в треде номер " + l + " " + (endJ - startJ));
             }
             long endI = System.currentTimeMillis();
-            System.out.println("Время на " + i + "ую итерацию по i в треде номер " + l + " " + (endI - startI));
+//            System.out.println("Время на " + i + "ую итерацию по i в треде номер " + l + " " + (endI - startI));
         }
         long end = System.currentTimeMillis();
-        System.out.println("На расчёт 400 000 000 расстояний было затрачено: " + (end - start));
+        System.out.println("На расчёт 4 000 000 расстояний было затрачено: " + (end - start));
 
 //        for (Double i = mapData.ceilingKey(new Double(l)); i < mapData.floorKey(mapData.lowerKey(mapData.lastKey()) - l); i = mapData.higherKey(mapData.higherKey(mapData.higherKey(mapData.higherKey(i))))){
 //            long startI = System.currentTimeMillis();

@@ -221,13 +221,13 @@ public class Normalization{
 
         System.out.println(amountOfUsers(array));
 
-        int n = 1;
+        int n = 10;
         int amountOfCores = 4;
 
         double[][] accumulator = new double[1001][n];
         ConcurrentSkipListSet<Double> setOfKeys = new ConcurrentSkipListSet<>(list.keySet());
         CopyOnWriteArrayList<ConcurrentSkipListSet<Double>> setOfSets = new CopyOnWriteArrayList<>();
-        System.out.println("Строка 231 выполнена");
+
         for(int i = 0; i < n; i++){
             CopyOnWriteArrayList<double[][]> results = new CopyOnWriteArrayList<>();
             ArrayList<Parallel> concurrencyList = new ArrayList<>();

@@ -1,17 +1,16 @@
 package ru.saydumarov;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 
 public class Filter {
-    public static ConcurrentSkipListMap<Double, Double> influenceFilter(ConcurrentSkipListMap<Double, Double> map){
-        ConcurrentSkipListMap<Double, Double> temp = new ConcurrentSkipListMap<Double, Double>();
+//    Из созданной с помощью метода InfluenceClustering.influenceCounter "карты" вида
+//    "Номер влиятельного пользователя:оказанное им суммарное влияние" производится отсеивание наименее влиятельных
+    static ConcurrentSkipListMap<Double, Double> influenceFilter(ConcurrentSkipListMap<Double, Double> map, int influence){
+        ConcurrentSkipListMap<Double, Double> temp = new ConcurrentSkipListMap<>();
         for (Double k : map.keySet()){
-//            Здесь стоит параметр 91, с помощью которого выделяется 5% наиболее влиятельных пользователей
-            if (map.get(k) >= 91){
+            if (map.get(k) >= influence){
                 temp.put(k, map.get(k));
             }
         }
@@ -19,21 +18,34 @@ public class Filter {
     }
 
 
-    public static List<List<Double>> globalFilter(double[][] rowData, ConcurrentSkipListMap<Double, Double> mostPowerfulCruelUsersMap){
+//  Из журнала действий удаляются те действия, которые сынициированы влиятельными пользователями с наименьшей влиятельностью.
+//  Производится запись журнала не в виде двумерного массива, а в виде списка списков
+    static List<List<Double>> globalFilter(double[][] rawData, ConcurrentSkipListMap<Double, Double> mostPowerfulCruelUsersMap){
         List<List<Double>> list = new ArrayList<>();
-        for (int i = 0; i < rowData.length; i++){
-            for (Double k : mostPowerfulCruelUsersMap.keySet()){
-                if (k.equals(rowData[i][1])){
+        for (double[] aRawData : rawData) {
+            for (Double k : mostPowerfulCruelUsersMap.keySet()) {
+                if (k.equals(aRawData[1])) {
                     List<Double> row = new ArrayList<>();
-                    for (int j = 0; j < rowData[i].length; j++){
-                        row.add(rowData[i][j]);
-//                        System.out.print(row.get(j) + " ");
+                    for (double anARawData : aRawData) {
+                        row.add(anARawData);
                     }
-//                    System.out.println();
                     list.add(row);
                 }
             }
         }
         return list;
+    }
+
+    static List<List<String>> usersFilter(ConcurrentSkipListMap<Double, Double> influentalUsers, List<List<String>> id){
+        List<List<String>> result = new ArrayList<>();
+        for (List<String> row : id){
+            if(influentalUsers.keySet().contains(Double.parseDouble(row.get(0)))){
+                List<String> temp = new ArrayList<>();
+                temp.addAll(row);
+                temp.add(String.valueOf(influentalUsers.get(Double.parseDouble(row.get(0)))));
+                result.add(temp);
+            }
+        }
+        return result;
     }
 }

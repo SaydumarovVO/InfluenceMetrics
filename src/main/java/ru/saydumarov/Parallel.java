@@ -1,8 +1,5 @@
 package ru.saydumarov;
 
-import ru.saydumarov.FileWorker;
-import ru.saydumarov.Normalization;
-import ru.saydumarov.Randomizer;
 import org.apache.commons.math3.linear.SparseRealVector;
 import org.apache.commons.math3.util.FastMath;
 

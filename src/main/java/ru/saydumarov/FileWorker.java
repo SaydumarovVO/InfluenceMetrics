@@ -1,16 +1,20 @@
 package ru.saydumarov;
 
 
-import org.apache.commons.math3.linear.SparseRealVector;
+import jsat.classifiers.DataPoint;
+import jsat.linear.IndexValue;
+import jsat.linear.Vec;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 public class FileWorker {
     public static void write(String fileName, int numberOfFile, double[][] data) {
         File file = new File(fileName + numberOfFile + ".txt");
-        int rows = data.length;
         int columns = data[0].length;
 
 
@@ -19,18 +23,13 @@ public class FileWorker {
                 file.createNewFile();
             }
 
-            PrintWriter out = new PrintWriter(file.getAbsoluteFile());
-
-            try {
-                for (int i = 0; i < rows; i++) {
+            try (PrintWriter out = new PrintWriter(file.getAbsoluteFile())) {
+                for (double[] aData : data) {
                     for (int j = 0; j < columns; j++) {
-                        out.print(data[i][j] + " ");
+                        out.print(aData[j] + " ");
                     }
                     out.println();
                 }
-            }
-            finally {
-                out.close();
             }
         }
         catch(IOException e) {
@@ -38,10 +37,10 @@ public class FileWorker {
         }
     }
 
-    public static void write(String fileName, ConcurrentSkipListMap<Double, SparseRealVector> data){
-        File file = new File(fileName);
 
-        try{
+    public static void write(String fileName, int numberOfExperiment, String identifier, double[][] array){
+        File file = new File(fileName + numberOfExperiment + "-" + identifier + ".txt");
+        try {
             if(!file.exists()){
                 file.createNewFile();
             }
@@ -49,9 +48,9 @@ public class FileWorker {
             PrintWriter out = new PrintWriter(file.getAbsoluteFile());
 
             try {
-                for(SparseRealVector v : data.values()){
-                    for (int i = 0; i < v.getDimension(); i++){
-                        out.print(v.getEntry(i) + " ");
+                for (int i = 0; i < array.length; i++){
+                    for (int j = 0; j < array[0].length; j++){
+                        out.print(array[i][j] + " ");
                     }
                     out.println();
                 }
@@ -64,6 +63,206 @@ public class FileWorker {
             throw new RuntimeException(e);
         }
     }
+
+    public static void write(String fileName, int numberOfExperiment, String identifier, int[] array){
+        File file = new File(fileName + numberOfExperiment + "-" + identifier + ".txt");
+        try {
+            if(!file.exists()){
+                file.createNewFile();
+            }
+
+            PrintWriter out = new PrintWriter(file.getAbsoluteFile());
+
+            try {
+                for (int i = 0; i < array.length; i++){
+                    out.println(array[i]);
+                }
+            }
+            finally {
+                out.close();
+            }
+        }
+        catch(IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void write(String fileName, List<List<String>> data){
+        File file = new File(fileName);
+        try {
+            if(!file.exists()){
+                file.createNewFile();
+            }
+
+            PrintWriter out = new PrintWriter(file.getAbsoluteFile());
+
+            try {
+                for (List<String> row : data){
+                    for (String string : row){
+                        out.print(string + " ");
+                    }
+                    out.println();
+                }
+            }
+            finally {
+                out.close();
+            }
+        }
+        catch(IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void write(String fileName, ConcurrentSkipListMap<String, Integer> data){
+        File file = new File(fileName);
+        try {
+            if(!file.exists()){
+                file.createNewFile();
+            }
+
+            PrintWriter out = new PrintWriter(file.getAbsoluteFile());
+
+            try {
+                for (String i : data.keySet()){
+                    out.println(i + " " + data.get(i));
+                }
+            }
+            finally {
+                out.close();
+            }
+        }
+        catch(IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void write(String fileName, int numberOfExperiment, int identifier, HashMap<Integer, Double> data){
+        File file = new File(fileName + numberOfExperiment + identifier + ".txt");
+        try {
+            if(!file.exists()){
+                file.createNewFile();
+            }
+
+            PrintWriter out = new PrintWriter(file.getAbsoluteFile());
+
+            try {
+                for (Integer i : data.keySet()){
+                    out.println(i + " " + data.get(i));
+                }
+            }
+            finally {
+                out.close();
+            }
+        }
+        catch(IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void write(String fileName, int numberOfExperiment, HashMap<Integer, Integer> data){
+        File file = new File(fileName + numberOfExperiment + ".txt");
+        try {
+            if(!file.exists()){
+                file.createNewFile();
+            }
+
+            PrintWriter out = new PrintWriter(file.getAbsoluteFile());
+
+            try {
+                for (Integer i : data.keySet()){
+                    out.println(i + " " + data.get(i));
+                }
+            }
+            finally {
+                out.close();
+            }
+        }
+        catch(IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void write(String fileName, int numberOfExperiment, int numberOfFile, List<DataPoint> data){
+        File file = new File(fileName + numberOfExperiment + "-" + numberOfFile + ".txt");
+        try {
+            if(!file.exists()){
+                file.createNewFile();
+            }
+
+            PrintWriter out = new PrintWriter(file.getAbsoluteFile());
+
+            try {
+                for (DataPoint dataPoint : data){
+                    Vec vec = dataPoint.getNumericalValues();
+                    Iterator<IndexValue> iterator = vec.iterator();
+                    while (iterator.hasNext()){
+                        IndexValue indexValue = iterator.next();
+                        out.print(indexValue.getIndex() + "," + indexValue.getValue() + "; ");
+                    }
+                    out.println();
+                }
+            }
+            finally {
+                out.close();
+            }
+        }
+        catch(IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void write(String fileName, int numberOfExperiment, int numberOfFile, Vec vec){
+        File file = new File(fileName + numberOfExperiment + "-" + numberOfFile + ".txt");
+        try {
+            if(!file.exists()){
+                file.createNewFile();
+            }
+
+            PrintWriter out = new PrintWriter(file.getAbsoluteFile());
+
+            try {
+                Iterator<IndexValue> iterator = vec.iterator();
+                while (iterator.hasNext()){
+                    IndexValue indexValue = iterator.next();
+                    out.println(indexValue.getIndex() + "," + indexValue.getValue() + "; ");
+                }
+                out.println();
+            }
+            finally {
+                out.close();
+            }
+        }
+        catch(IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+//    public static void write(String fileName, ConcurrentSkipListMap<Integer, SparseRealVector> data){
+//        File file = new File(fileName);
+//
+//        try{
+//            if(!file.exists()){
+//                file.createNewFile();
+//            }
+//
+//            PrintWriter out = new PrintWriter(file.getAbsoluteFile());
+//
+//            try {
+//                for(SparseRealVector v : data.values()){
+//                    for (int i = 0; i < v.getDimension(); i++){
+//                        out.print(v.getEntry(i) + " ");
+//                    }
+//                    out.println();
+//                }
+//            }
+//            finally {
+//                out.close();
+//            }
+//        }
+//        catch(IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     public static void writeInfluence(String fileName, List<List<Double>> data){
         File file = new File(fileName);
@@ -124,6 +323,28 @@ public class FileWorker {
         }
         return ret;
     }
+
+    public static List<List<String>> readId(String fileName) throws FileNotFoundException{
+        List<List<String>> matrix = new ArrayList<List<String>>();
+
+        Scanner sсanner = new Scanner(new File(fileName), "UTF-8");
+
+
+        for (int i = 0; sсanner.hasNext(); i++)
+        {
+            Scanner s = new Scanner(sсanner.nextLine());
+            List<String> row = new LinkedList<String>();
+            while (s.hasNext())
+            {
+                row.add(s.next());
+            }
+            matrix.add(row);
+            s.close();
+        }
+        sсanner.close();
+        return matrix;
+    }
+
 
     public static double[][] read(String fileName) throws FileNotFoundException {
         List<List<Integer>> matrix = new ArrayList<List<Integer>>();
